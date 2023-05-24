@@ -1,8 +1,11 @@
 import React from 'react'
+import Persons from './Persons';
 
-const PersonsList = ({filtered, persons}) => {
+const PersonsList = ({filtered, persons, onDelete}) => {
+  const filteredPersons = persons.filter(person => person.name.toLowerCase().includes(filtered.toLowerCase()));
+
   return (
-    filtered ? persons.filter(person => person.name.toLowerCase().includes(filtered.toLowerCase())).map(person => <p key={person.name}>{person.name} {person.number}</p>) : persons.map(person => <p key={person.name}>{person.name} {person.number}</p>)
+    filtered ? <Persons persons={filteredPersons} onDelete={onDelete}/> : <Persons persons={persons} onDelete={onDelete}/>
   )
 }
 

@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 
+import services from './services/services';
+
 import Filter from './components/Filter';
 import Form from './components/Form';
 import PersonsList from './components/PersonsList';
@@ -9,10 +11,7 @@ const App = () => {
   const [persons, setPersons] = useState([]);
 
   useEffect(() => {
-    axios.get('http://localhost:3001/persons').then(response => {
-      console.log('Fetched');
-      setPersons(response.data);
-    })
+    services.getContacts().then(initialContacts => setPersons(initialContacts));
   }, [])
   
   const [newName, setNewName] = useState('');
@@ -30,18 +29,38 @@ const App = () => {
   const handleFormSubmit = (e) => {
     e.preventDefault();
     if (persons.find(person => person.name === newName)) {
-      alert(`${newName} is already in the list!`)
+      const confirmation = window.confirm('Number is already added. Replace old number?');
+
+      const doubleContact = persons.find(person => person.name === newName);
+      const newDetails = {...doubleContact, number: newNumber};
+
+      if (confirmation) {
+        services.updateContact(doubleContact.id, newDetails).then(changedContact => {
+          setPersons(persons.map(p => p.id !== doubleContact.id ? p : changedContact))
+        })
+      }
       return;
     }
 
-    const newPersons = persons.concat({name: newName, number: newNumber});
-    setPersons(newPersons);
-    setNewName('');
-    setNewNumber('');
+    services.addContact({name: newName, number: newNumber}).then(newContact => {
+      const newPersons = persons.concat(newContact);
+      setPersons(newPersons);
+      setNewName('');
+      setNewNumber('');
+    })
   }
 
   const handleFilter = (e) => {
     setFiltered(e.target.value);
+  }
+
+  const handleDelete = (id) => {
+    const confirmation = window.confirm('Are you sure?');
+    if (confirmation) {
+      services.deleteContact(id).then(
+        setPersons(persons.filter(p => p.id !== id))
+      )
+    }
   }
 
   return (
@@ -51,7 +70,7 @@ const App = () => {
       <h2>Add new contact</h2>
       <Form onFormSubmit={handleFormSubmit} newName={newName} newNumber={newNumber} onNameInput={handleNameInput} onNumberInput={handleNumberInput}/>
       <h2>Numbers</h2>
-      <PersonsList filtered={filtered} persons={persons}/>
+      <PersonsList filtered={filtered} persons={persons} onDelete={handleDelete}/>
     </div>
   )
 }
