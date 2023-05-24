@@ -24,11 +24,6 @@
       "name": "John Smith",
       "number": "012-3456789",
       "id": 5
-    },
-    {
-      "name": "Jane Doe",
-      "number": "123-4567891",
-      "id": 6
     }
   ]
 }

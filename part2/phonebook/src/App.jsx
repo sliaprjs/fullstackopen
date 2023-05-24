@@ -6,6 +6,7 @@ import services from './services/services';
 import Filter from './components/Filter';
 import Form from './components/Form';
 import PersonsList from './components/PersonsList';
+import Message from './components/Message';
 
 const App = () => {
   const [persons, setPersons] = useState([]);
@@ -17,6 +18,7 @@ const App = () => {
   const [newName, setNewName] = useState('');
   const [newNumber, setNewNumber] = useState('');
   const [filtered, setFiltered] = useState('');
+  const [message, setMessage] = useState(false);
 
   const handleNameInput = (e) => {
     setNewName(e.target.value);
@@ -47,6 +49,11 @@ const App = () => {
       setPersons(newPersons);
       setNewName('');
       setNewNumber('');
+      
+      setMessage(true);
+      setTimeout(() => {
+        setMessage(false)
+      }, 3000)
     })
   }
 
@@ -66,6 +73,7 @@ const App = () => {
   return (
     <div>
       <h1>Phonebook</h1>
+      {message ? <Message/> : null}
       <Filter filtered={filtered} onFilter={handleFilter}/>
       <h2>Add new contact</h2>
       <Form onFormSubmit={handleFormSubmit} newName={newName} newNumber={newNumber} onNameInput={handleNameInput} onNumberInput={handleNumberInput}/>
