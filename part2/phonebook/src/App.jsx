@@ -18,7 +18,7 @@ const App = () => {
   const [newName, setNewName] = useState('');
   const [newNumber, setNewNumber] = useState('');
   const [filtered, setFiltered] = useState('');
-  const [message, setMessage] = useState(false);
+  const [message, setMessage] = useState("");
 
   const handleNameInput = (e) => {
     setNewName(e.target.value);
@@ -50,7 +50,7 @@ const App = () => {
       setNewName('');
       setNewNumber('');
       
-      setMessage(true);
+      setMessage('success');
       setTimeout(() => {
         setMessage(false)
       }, 3000)
@@ -66,14 +66,19 @@ const App = () => {
     if (confirmation) {
       services.deleteContact(id).then(
         setPersons(persons.filter(p => p.id !== id))
-      )
+      ).catch(error => {
+        setMessage('error');
+        setTimeout(() => {
+          setMessage(false)
+        }, 3000)
+      });
     }
   }
 
   return (
     <div>
       <h1>Phonebook</h1>
-      {message ? <Message/> : null}
+      {message ? <Message message={message}/> : null}
       <Filter filtered={filtered} onFilter={handleFilter}/>
       <h2>Add new contact</h2>
       <Form onFormSubmit={handleFormSubmit} newName={newName} newNumber={newNumber} onNameInput={handleNameInput} onNumberInput={handleNumberInput}/>
